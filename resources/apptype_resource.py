@@ -1,34 +1,36 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
+
+from flask import request
+from marshmallow import ValidationError
+
 from models.apptype_model import ApptypeModel
+from schemas.apptype_schema import AppTypeSchema
+
+apptype_schema = AppTypeSchema()
+apptypes_schema = AppTypeSchema(many=True)
 
 class AppManagement(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('appname',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
-    parser.add_argument('description',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
 
-    def post(self):
-        data = AppManagement.parser.parse_args()
-
-        if ApptypeModel.find_by_appname(data['appname']):
+    @classmethod
+    def post(cls):
+        try:
+            app = apptype_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.message,400
+        if ApptypeModel.find_by_appname(app.appname):
             return {"message": "A App Name with the appname already exists"}, 400
-
-        app = ApptypeModel(data['appname'], data['description'])
         app.save_to_db()
-
         return {"message": "Appname created successfully."}, 201
 
-        
+class Apptypes(Resource):       
     def get(self):
-        pass
-    
+        apptypes = ApptypeModel.find_all()
+        if not apptypes:
+            return {'message':'Ckeck if AppTypes were created'}, 404
+        return apptypes_schema.dump(apptypes)
+
+        
+class AppType(Resource):        
     def gat(self,appname):
         pass
 

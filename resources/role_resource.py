@@ -1,40 +1,45 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
+from flask import Request
 from models.role_model import RoleModel
 from flask import jsonify
 
+from flask import request
+from marshmallow import ValidationError
+
+from schemas.role_schema import RoleSchema
+
+role_schema = RoleSchema();
+roles_list_schema = RoleSchema(many=True);
+
 class RoleManagement(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('rolename',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
-    parser.add_argument('description',
-                        type=str,
-                        required=True,
-                        help="This field cannot be blank."
-                        )
+
+    
     def post(self):
-        data = RoleManagement.parser.parse_args()
-
-        if RoleModel.find_by_rolename(data['rolename']):
+        try:
+            role = role_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.message,400
+        if RoleModel.find_by_rolename(role.rolename):
             return {"message": "A Role with the rolename already exists"}, 400
-
-        role = RoleModel(data['rolename'], data['description'])
         role.save_role()
-
         return {"message": "Role created successfully."}, 201
 
+
 class Roles(Resource):
-
-    def get(self):
-        role = RoleModel.find_all()
-        if not role:
+    @classmethod
+    def get(cls):
+        roles = RoleModel.find_all()
+        if not roles:
             return {'message':'Ckeck if Roles were created'}, 404
-        return {'roles':[x.json() for x in RoleModel.find_all()]}
-    
-    # def gat(self,appname):
-    #     pass
+        return roles_list_schema.dump(roles)
 
-    # def get(self,id):
-    #     pass
+
+class Role(Resource):
+
+    @classmethod
+    def gat(cls,appname):
+        pass
+
+    @classmethod
+    def get(cls,id):
+        pass

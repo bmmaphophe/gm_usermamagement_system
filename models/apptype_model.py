@@ -6,11 +6,6 @@ class ApptypeModel(db.Model):
     appname = db.Column(db.String(80))
     description = db.Column(db.String(80))
 
-    def __init__(self, appname,description):
-
-        self.appname = appname
-        self.description = description
-
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
