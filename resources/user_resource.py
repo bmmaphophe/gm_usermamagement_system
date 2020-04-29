@@ -14,14 +14,18 @@ users_schema = UserSchema()
 class UserManagement(Resource):
     @classmethod
     def post(cls):
+        roles = []
         try:
             user = user_schema.load(request.get_json())
+            print("User Object " + user)
         except ValidationError as err:
             return err.message,400
  
         if UserModel.find_by_username(user.username):
             return {"message": "A user with that username already exists"}, 400
-
+        print("Checkig Roles" + user.roles)
+        roles.append(user.roles)
+        user = UserModel(roles=roles)
         user.save_to_db()
 
         return {"message": "User created successfully."}, 201

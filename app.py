@@ -45,4 +45,4 @@ api.add_resource(UserLogin, '/api/auth')
 if __name__ == '__main__':  
     db.init_app(app)
     ma.init_app(app)
-    app.run(port=8181,debug=True)
+    app.run(port=5000,debug=True)
