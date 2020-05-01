@@ -12,9 +12,9 @@ from models.role_model import RoleModel
 
 class UserRoleMapper(db.Model):
     __tablename__ = "tbl_user_role_mapper"
-    id = db.Column(db.Integer,primary_key=True)
-    user_id = db.Column(db.Integer,db.ForeignKey('tbl_user.id'))
-    role_id= db.Column(db.Integer,db.ForeignKey('tbl_role.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('tbl_user.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('tbl_role.id'))
     #app_id = db.Column(db.Integer,db.ForeignKey('tbl_apptype.id'))
 
     role = db.relationship("RoleModel", )
@@ -25,13 +25,13 @@ class UserRoleMapper(db.Model):
 class UserModel(db.Model):
     __tablename__ = 'tbl_user'
 
-    id = db.Column(db.Integer,primary_key =True)
-    username = db.Column(db.String(100),nullable =False,unique=True)
-    password  = db.Column(db.String(100),nullable =False,)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False,)
     surname = db.Column(db.String(100))
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
-    roles  = db.relationship('UserRoleMapper', back_populates="user" )
+    roles = db.relationship('UserRoleMapper', back_populates="user" )
    # apps  = db.relationship('UserRoleMapper', back_populates="app")
 
     def save_to_db(self):
@@ -49,6 +49,3 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.filter_by(id=_id).first()
-
-
-
